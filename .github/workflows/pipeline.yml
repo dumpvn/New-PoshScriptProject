@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - name: Run PSScriptAnalyzer
+        uses: microsoft/psscriptanalyzer-action@v1.0
+        with:
+          path: .\
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Publish PowerShell Script
+        uses: jcwillox/action-publish-powershell-script@v1.0.1
+        with:
+          name: New-PoshScriptProject.ps1
+          path: ./Source/New-PoshScriptProject.ps1
+          nuget_api_key: ${{ secrets.NUGETAPIKEY }}
